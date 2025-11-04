@@ -5,15 +5,23 @@ import {
   getCourse,
   updateCourse,
   deleteCourse,
+  bulkUpdateCourses,
+  bulkDeleteCourses,
+  bulkUpdateStatus,
 } from "../controllers/courseController.js";
 
 const router = express.Router();
 
-// Routes
-router.post("/", createCourse);        // Create new course
-router.get("/", getAllCourses);        // Get all courses
-router.get("/:idOrName", getCourse);   // Get course by ID or Name
-router.put("/:id", updateCourse);      // Update course by ID
-router.delete("/:id", deleteCourse);   // Delete course by ID
+// Regular CRUD Routes
+router.post("/", createCourse);
+router.get("/", getAllCourses);
+router.get("/:idOrName", getCourse);
+router.put("/:id", updateCourse);
+router.delete("/:id", deleteCourse);
+
+// ✨ Bulk Operation Routes
+router.post("/bulk/update", bulkUpdateCourses);
+router.post("/bulk/delete", bulkDeleteCourses);
+router.post("/bulk/status", bulkUpdateStatus);
 
 export default router;

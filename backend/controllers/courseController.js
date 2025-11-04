@@ -68,3 +68,120 @@ export const deleteCourse = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+export const searchCourses = async (req, res) => {
+  try {
+    const { q, category, status, tags } = req.query;
+    
+    let query = {};
+    
+    if (q) {
+      query.$or = [
+        { programTitle: { $regex: q, $options: "i" } },
+        { programInternalName: { $regex: q, $options: "i" } },
+        { "seo.metaTitle": { $regex: q, $options: "i" } },
+      ];
+    }
+    
+    if (category) query.category = category;
+    if (status) query["meta.status"] = status;
+    if (tags) query.tags = { $in: Array.isArray(tags) ? tags : [tags] };
+    
+    const courses = await CourseCard.find(query).sort({ createdAt: -1 });
+    res.json(courses);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
+/** 🟢 Bulk Update Courses */
+export const bulkUpdateCourses = async (req, res) => {
+  try {
+    const { ids, updates } = req.body;
+    
+    // Validate input
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ error: "Please provide an array of course IDs" });
+    }
+    
+    if (!updates || typeof updates !== "object") {
+      return res.status(400).json({ error: "Please provide updates object" });
+    }
+    
+    // Add lastModified timestamp
+    const updateData = {
+      ...updates,
+      "meta.lastModified": Date.now(),
+    };
+    
+    const result = await CourseCard.updateMany(
+      { _id: { $in: ids } },
+      { $set: updateData }
+    );
+    
+    res.json({
+      success: true,
+      modified: result.modifiedCount,
+      matched: result.matchedCount,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+/** 🟢 Bulk Delete Courses */
+export const bulkDeleteCourses = async (req, res) => {
+  try {
+    const { ids } = req.body;
+    
+    // Validate input
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ error: "Please provide an array of course IDs" });
+    }
+    
+    const result = await CourseCard.deleteMany({ _id: { $in: ids } });
+    
+    res.json({
+      success: true,
+      deleted: result.deletedCount,
+      message: `${result.deletedCount} course(s) deleted successfully`,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+/** 🟢 Bulk Publish/Unpublish Courses */
+export const bulkUpdateStatus = async (req, res) => {
+  try {
+    const { ids, status } = req.body;
+    
+    // Validate input
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ error: "Please provide an array of course IDs" });
+    }
+    
+    if (!["draft", "published"].includes(status)) {
+      return res.status(400).json({ error: "Status must be 'draft' or 'published'" });
+    }
+    
+    const result = await CourseCard.updateMany(
+      { _id: { $in: ids } },
+      { 
+        $set: { 
+          "meta.status": status,
+          "meta.lastModified": Date.now(),
+          ...(status === "published" && { "meta.publishDate": Date.now() }),
+        },
+      }
+    );
+    
+    res.json({
+      success: true,
+      modified: result.modifiedCount,
+      message: `${result.modifiedCount} course(s) ${status === "published" ? "published" : "unpublished"}`,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
