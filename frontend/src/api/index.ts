@@ -63,10 +63,27 @@ export interface Page {
 }
 
 export interface DashboardStats {
-  totalCourses: number;
-  publishedCourses: number;
-  totalPages: number;
-  lastUpdated: string;
+  courses: {
+    total: number;
+    published: number;
+    draft: number;
+  };
+  pages: {
+    total: number;
+    published: number;
+  };
+  recentCourses: Array<{
+    programTitle: string;
+    category: string;
+    createdAt: string;
+    meta: { status: string };
+  }>;
+  recentPages: Array<{
+    title: string;
+    type: string;
+    createdAt: string;
+    status: string;
+  }>;
 }
 
 /* ------------------------------------------------------------
@@ -103,7 +120,7 @@ export const pageAPI = {
 
 // 📊 Stats API
 export const statsAPI = {
-  getDashboard: () => api.get<DashboardStats>('/stats/dashboard'),
+  getDashboard: () => api.get<DashboardStats>('/stats'),
 };
 
 /* ------------------------------------------------------------

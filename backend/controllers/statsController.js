@@ -10,19 +10,24 @@ export const getDashboardStats = async (req, res) => {
     const draftCourses = await CourseCard.countDocuments({
       "meta.status": "draft",
     });
-    
+
     const totalPages = await Page.countDocuments();
     const publishedPages = await Page.countDocuments({ status: "published" });
-    
+
     const coursesByCategory = await CourseCard.aggregate([
       { $group: { _id: "$category", count: { $sum: 1 } } },
     ]);
-    
+
     const recentCourses = await CourseCard.find()
       .sort({ createdAt: -1 })
       .limit(5)
       .select("programTitle category createdAt meta.status");
-    
+
+    const recentPages = await Page.find()
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .select("title type createdAt status");
+
     res.json({
       courses: {
         total: totalCourses,
@@ -35,6 +40,7 @@ export const getDashboardStats = async (req, res) => {
       },
       coursesByCategory,
       recentCourses,
+      recentPages,
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
