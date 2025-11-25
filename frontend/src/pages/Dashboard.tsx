@@ -7,6 +7,65 @@ import { useQuery } from "@tanstack/react-query";
 import { statsAPI } from "@/api";
 import { formatDistanceToNow } from "date-fns";
 
+import { Skeleton } from "@/components/ui/skeleton";
+
+const DashboardSkeleton = () => {
+  return (
+    <div className="space-y-8">
+      {/* Header Skeleton */}
+      <div>
+        <Skeleton className="h-9 w-48 mb-2" />
+        <Skeleton className="h-5 w-96" />
+      </div>
+
+      {/* Stats Grid Skeleton */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        {[...Array(4)].map((_, i) => (
+          <Card key={i} className="p-6 shadow-card">
+            <div className="flex items-center justify-between space-y-0 pb-2">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-4 w-4" />
+            </div>
+            <div className="space-y-2 mt-2">
+              <Skeleton className="h-8 w-16" />
+              <Skeleton className="h-3 w-32" />
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      {/* Quick Actions Skeleton */}
+      <Card className="p-6 shadow-card">
+        <Skeleton className="h-7 w-32 mb-4" />
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {[...Array(3)].map((_, i) => (
+            <Skeleton key={i} className="h-24 w-full rounded-lg" />
+          ))}
+        </div>
+      </Card>
+
+      {/* Recent Activity Skeleton */}
+      <Card className="p-6 shadow-card">
+        <Skeleton className="h-7 w-36 mb-4" />
+        <div className="space-y-4">
+          {[...Array(5)].map((_, i) => (
+            <div
+              key={i}
+              className="flex items-center justify-between py-2 border-b border-border last:border-0"
+            >
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-48" />
+                <Skeleton className="h-3 w-24" />
+              </div>
+              <Skeleton className="h-6 w-16 rounded-full" />
+            </div>
+          ))}
+        </div>
+      </Card>
+    </div>
+  );
+};
+
 const Dashboard = () => {
   const navigate = useNavigate();
 
@@ -19,7 +78,7 @@ const Dashboard = () => {
   });
 
   if (isLoading) {
-    return <div className="p-8">Loading dashboard...</div>;
+    return <DashboardSkeleton />;
   }
 
   const stats = [

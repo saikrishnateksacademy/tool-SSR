@@ -4,7 +4,7 @@ import axios from 'axios';
    1️⃣ API Setup
 ------------------------------------------------------------ */
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:4000/api',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:4040/api',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -94,8 +94,8 @@ export interface DashboardStats {
 export const courseAPI = {
   getAll: () => api.get<Course[]>('/courses'),
   getById: (id: string) => api.get<Course>(`/courses/${id}`),
-  create: (data: Course) => api.post<Course>('/courses', data),
-  update: (id: string, data: Course) => api.put<Course>(`/courses/${id}`, data),
+  create: (data: any) => api.post<Course>('/courses', data),
+  update: (id: string, data: any) => api.put<Course>(`/courses/${id}`, data),
   delete: (id: string) => api.delete(`/courses/${id}`),
 
   // ✨ Bulk Operations

@@ -19,6 +19,54 @@ import { Search, Edit2, Trash2, Plus, Eye, XSquare } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
+import { Skeleton } from "@/components/ui/skeleton";
+
+const CourseManagerSkeleton = () => {
+  return (
+    <div className="space-y-6">
+      {/* HEADER SKELETON */}
+      <div className="flex items-center justify-between">
+        <div>
+          <Skeleton className="h-9 w-64 mb-2" />
+          <Skeleton className="h-5 w-48" />
+        </div>
+        <Skeleton className="h-10 w-32" />
+      </div>
+
+      {/* SEARCH SKELETON */}
+      <Card className="p-4 flex gap-4 items-center">
+        <Skeleton className="h-5 w-5 rounded" />
+        <div className="flex-1">
+          <Skeleton className="h-10 w-full" />
+        </div>
+      </Card>
+
+      {/* LIST SKELETON */}
+      {[...Array(3)].map((_, i) => (
+        <Card key={i} className="p-6 flex items-start gap-4">
+          <Skeleton className="h-5 w-5 mt-1 rounded" />
+          <div className="flex-1">
+            <div className="flex items-center gap-3 mb-2">
+              <Skeleton className="h-7 w-48" />
+              <Skeleton className="h-5 w-20 rounded-full" />
+            </div>
+            <div className="flex gap-2 mb-3">
+              <Skeleton className="h-5 w-24 rounded-full" />
+              <Skeleton className="h-5 w-24 rounded-full" />
+            </div>
+            <Skeleton className="h-4 w-32" />
+          </div>
+          <div className="flex gap-2">
+            <Skeleton className="h-9 w-9" />
+            <Skeleton className="h-9 w-9" />
+            <Skeleton className="h-9 w-9" />
+          </div>
+        </Card>
+      ))}
+    </div>
+  );
+};
+
 const CourseManager = () => {
   const navigate = useNavigate();
 
@@ -110,12 +158,7 @@ const CourseManager = () => {
   const deleteOne = (id: string) => confirmDelete([id]);
 
   /* ------------------------ RENDER ------------------------ */
-  if (loading)
-    return (
-      <Card className="p-12 text-center">
-        <p className="text-muted-foreground">Loading courses...</p>
-      </Card>
-    );
+  if (loading) return <CourseManagerSkeleton />;
 
   return (
     <div className="space-y-6">
@@ -194,9 +237,8 @@ const CourseManager = () => {
         filtered.map((c) => (
           <Card
             key={c._id}
-            className={`p-6 flex items-start gap-4 ${
-              selected.has(c._id) ? "ring-2 ring-primary" : ""
-            }`}
+            className={`p-6 flex items-start gap-4 ${selected.has(c._id) ? "ring-2 ring-primary" : ""
+              }`}
           >
             <Checkbox
               checked={selected.has(c._id)}

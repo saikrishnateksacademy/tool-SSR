@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, Search, Edit2, Trash2, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Mock data
 const mockPages = [
@@ -34,15 +35,74 @@ const mockPages = [
   },
 ];
 
+const PageManagerSkeleton = () => {
+  return (
+    <div className="space-y-6">
+      {/* Header Skeleton */}
+      <div className="flex items-center justify-between">
+        <div>
+          <Skeleton className="h-9 w-48 mb-2" />
+          <Skeleton className="h-5 w-64" />
+        </div>
+        <Skeleton className="h-10 w-32" />
+      </div>
+
+      {/* Search Skeleton */}
+      <Card className="p-4 shadow-card">
+        <Skeleton className="h-10 w-full" />
+      </Card>
+
+      {/* Page List Skeleton */}
+      <div className="grid gap-4">
+        {[...Array(3)].map((_, i) => (
+          <Card key={i} className="p-6 shadow-card">
+            <div className="flex items-start justify-between">
+              <div className="flex-1 space-y-2">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-6 w-64" />
+                  <Skeleton className="h-5 w-20 rounded-full" />
+                </div>
+                <div className="flex items-center gap-4">
+                  <Skeleton className="h-4 w-24 rounded-full" />
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-4 w-40" />
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Skeleton className="h-9 w-9" />
+                <Skeleton className="h-9 w-9" />
+                <Skeleton className="h-9 w-9" />
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const PageManager = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [pages] = useState(mockPages);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate loading delay
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const filteredPages = pages.filter(page =>
     page.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     page.slug.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (loading) {
+    return <PageManagerSkeleton />;
+  }
 
   return (
     <div className="space-y-6">
