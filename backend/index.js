@@ -10,7 +10,7 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors({ origin: "http://localhost:" }));  // Add frontend origin
+app.use(cors({ origin: "http://localhost:8080" }));  // Frontend origin
 app.use(express.json({ limit: "10mb" }));
 
 const limiter = rateLimit({
@@ -27,5 +27,5 @@ app.get("/", (req, res) => res.send("🚀 API is running..."));
 // ✅ All API routes
 app.use("/api", apiRoutes);
 
-const PORT = process.env.PORT || 4040;
+const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`✅ Server running at http://localhost:${PORT}`));

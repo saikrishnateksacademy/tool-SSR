@@ -75,6 +75,9 @@ const Dashboard = () => {
       const res = await statsAPI.getDashboard();
       return res.data;
     },
+    staleTime: 5 * 60 * 1000, // 5 minutes - data stays fresh
+    gcTime: 10 * 60 * 1000, // 10 minutes - cache retention (formerly cacheTime)
+    refetchOnWindowFocus: false, // Don't refetch on tab switch
   });
 
   if (isLoading) {
