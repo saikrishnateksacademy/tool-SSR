@@ -44,13 +44,57 @@ interface CTAButton {
   opensForm: boolean;
 }
 
+interface CourseFormData {
+  programInternalName: string;
+  programTitle: string;
+  category: string;
+  subCategory: string;
+  media: {
+    thumbnailUrl: string;
+    alt: string;
+  };
+  pricing: {
+    feeRange: string;
+    currency: string;
+    scholarships: boolean;
+    emiAvailable: boolean;
+    noCostEmi: boolean;
+  };
+  duration: {
+    label: string;
+    minMonths: number;
+    maxMonths: number;
+  };
+  delivery: {
+    mode: string;
+    format: string[];
+  };
+  tags: string[];
+  universities: University[];
+  specializations: Specialization[];
+  ctaButtons: CTAButton[];
+  meta: {
+    slug: string;
+    canonicalUrl: string;
+    status: string;
+    visibility: string;
+    priority: number;
+  };
+  seo: {
+    metaTitle: string;
+    metaDescription: string;
+    ogImage: string;
+    schemaType: string;
+  };
+}
+
 const CourseForm = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const isEdit = Boolean(id);
 
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<CourseFormData>({
     programInternalName: "",
     programTitle: "",
     category: "",
@@ -77,13 +121,13 @@ const CourseForm = () => {
 
     delivery: {
       mode: "",
-      format: [] as string[],
+      format: [],
     },
 
-    tags: [] as string[],
-    universities: [] as University[],
-    specializations: [] as Specialization[],
-    ctaButtons: [] as CTAButton[],
+    tags: [],
+    universities: [],
+    specializations: [],
+    ctaButtons: [],
 
     meta: {
       slug: "",
@@ -109,39 +153,49 @@ const CourseForm = () => {
       try {
         setLoading(true);
         const response = await courseAPI.getById(id);
-        const data = response.data;
+        const data: any = response.data;
 
         setFormData({
           programInternalName: data.programInternalName || "",
           programTitle: data.programTitle || "",
           category: data.category || "",
           subCategory: data.subCategory || "",
-          media: data.media || { thumbnailUrl: "", alt: "" },
-          pricing: data.pricing || {
-            feeRange: "",
-            currency: "INR",
-            scholarships: false,
-            emiAvailable: false,
-            noCostEmi: false,
+          media: {
+            thumbnailUrl: data.media?.thumbnailUrl || "",
+            alt: data.media?.alt || "",
           },
-          duration: data.duration || { label: "", minMonths: 0, maxMonths: 0 },
-          delivery: data.delivery || { mode: "", format: [] },
+          pricing: {
+            feeRange: data.pricing?.feeRange || "",
+            currency: data.pricing?.currency || "INR",
+            scholarships: data.pricing?.scholarships || false,
+            emiAvailable: data.pricing?.emiAvailable || false,
+            noCostEmi: data.pricing?.noCostEmi || false,
+          },
+          duration: {
+            label: data.duration?.label || "",
+            minMonths: data.duration?.minMonths || 0,
+            maxMonths: data.duration?.maxMonths || 0,
+          },
+          delivery: {
+            mode: data.delivery?.mode || "",
+            format: data.delivery?.format || [],
+          },
           tags: data.tags || [],
           universities: data.universities || [],
           specializations: data.specializations || [],
           ctaButtons: data.ctaButtons || [],
-          meta: data.meta || {
-            slug: "",
-            canonicalUrl: "",
-            status: "draft",
-            visibility: "public",
-            priority: 0.5,
+          meta: {
+            slug: data.meta?.slug || "",
+            canonicalUrl: data.meta?.canonicalUrl || "",
+            status: data.meta?.status || "draft",
+            visibility: data.meta?.visibility || "public",
+            priority: data.meta?.priority || 0.5,
           },
-          seo: data.seo || {
-            metaTitle: "",
-            metaDescription: "",
-            ogImage: "",
-            schemaType: "Course",
+          seo: {
+            metaTitle: data.seo?.metaTitle || "",
+            metaDescription: data.seo?.metaDescription || "",
+            ogImage: data.seo?.ogImage || "",
+            schemaType: data.seo?.schemaType || "Course",
           },
         });
       } catch (err: any) {

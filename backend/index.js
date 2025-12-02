@@ -10,7 +10,7 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors({ origin: "http://localhost:8080" }));  // Frontend origin
+app.use(cors({ origin: ["http://localhost:8080", "http://localhost:8081"] }));  // Frontend origins
 app.use(express.json({ limit: "10mb" }));
 
 const limiter = rateLimit({
